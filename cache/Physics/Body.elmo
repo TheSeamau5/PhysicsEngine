@@ -47,6 +47,16 @@ Elm.Physics.Body.make = function (_elm) {
    var plutoGravity = gravity(0.6);
    var sunGravity = gravity(274.0);
    var moonGravity = gravity(1.62);
+   var body = F4(function (bodyType,
+   mass,
+   initialPoint,
+   initialVelocity) {
+      return {_: {}
+             ,bodyType: bodyType
+             ,mass: mass
+             ,position: initialPoint
+             ,velocity: initialVelocity};
+   });
    var BodyTyped = F2(function (a,
    b) {
       return _U.insert("bodyType",
@@ -69,6 +79,7 @@ Elm.Physics.Body.make = function (_elm) {
       b);
    });
    var Dynamic = {ctor: "Dynamic"};
+   var dynamicBody = body(Dynamic);
    var applyForce = F2(function (force,
    body) {
       return _U.eq(body.bodyType,
@@ -95,27 +106,6 @@ Elm.Physics.Body.make = function (_elm) {
       body));
    });
    var Static = {ctor: "Static"};
-   var body = F4(function (bodyType,
-   mass,
-   initialPoint,
-   initialVelocity) {
-      return function () {
-         switch (bodyType.ctor)
-         {case "Dynamic": return {_: {}
-                                 ,bodyType: Dynamic
-                                 ,mass: mass
-                                 ,position: initialPoint
-                                 ,velocity: initialVelocity};
-            case "Static": return {_: {}
-                                  ,bodyType: Static
-                                  ,mass: mass
-                                  ,position: initialPoint
-                                  ,velocity: initialVelocity};}
-         _E.Case($moduleName,
-         "between lines 26 and 36");
-      }();
-   });
-   var dynamicBody = body(Dynamic);
    var staticBody = body(Static);
    _elm.Physics.Body.values = {_op: _op
                               ,body: body

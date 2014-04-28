@@ -23,18 +23,11 @@ type Body p m = Massive (BodyTyped ( Positioned ( Moving {} m ) p))
 -- basic constructor for Body Type
 body : BodyType -> Float -> Point a -> Point b -> Body a b
 body bodyType mass initialPoint initialVelocity = 
-  case bodyType of
-    Static  ->  { position  = initialPoint 
-                , velocity  = initialVelocity
-                , mass      = mass 
-                , bodyType  = Static 
-                }
-    Dynamic ->  { position  = initialPoint 
-                , velocity  = initialVelocity 
-                , mass      = mass 
-                , bodyType  = Dynamic 
-                } 
-
+    { position  = initialPoint 
+    , velocity  = initialVelocity
+    , mass      = mass 
+    , bodyType  = bodyType 
+    }
 -- basic constructor for a Static Body
 staticBody  : Float -> Point a -> Point b -> Body a b
 staticBody  = body Static

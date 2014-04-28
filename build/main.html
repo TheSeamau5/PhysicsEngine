@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="UTF-8"><title>main</title><script type="text/javascript" src="elm-runtime.js"></script><script type="text/javascript">Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Main";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Body = Elm.Physics.Body.make(_elm);
+   var Physics = Physics || {};
+   Physics.Math = Physics.Math || {};
+   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var hero = A3(Physics.Body.dynamicBody,
+   40,
+   Physics.Math.Point.origin,
+   Physics.Math.Point.origin);
+   var main = Text.asText(A2(Physics.Body.applyForce,
+   Physics.Body.earthGravity,
+   hero));
+   _elm.Main.values = {_op: _op
+                      ,hero: hero
+                      ,main: main};
+   return _elm.Main.values;
+};Elm.Physics = Elm.Physics || {};
+Elm.Physics.Body = Elm.Physics.Body || {};
+Elm.Physics.Body.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Body = _elm.Physics.Body || {};
+   if (_elm.Physics.Body.values)
+   return _elm.Physics.Body.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Body";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Math = Physics.Math || {};
+   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var force = Physics.Math.Point.point;
+   var gravity = function (magnitude) {
+      return A2(force,
+      0,
+      0 - magnitude);
+   };
+   var earthGravity = gravity(9.81);
+   var mercuryGravity = gravity(3.7);
+   var venusGravity = gravity(8.87);
+   var marsGravity = gravity(3.71);
+   var jupiterGravity = gravity(23.12);
+   var saturnGravity = gravity(10.44);
+   var uranusGravity = gravity(8.69);
+   var neptuneGravity = gravity(11.0);
+   var plutoGravity = gravity(0.6);
+   var sunGravity = gravity(274.0);
+   var moonGravity = gravity(1.62);
+   var BodyTyped = F2(function (a,
+   b) {
+      return _U.insert("bodyType",
+      a,
+      b);
+   });
+   var Massive = F2(function (a,
+   b) {
+      return _U.insert("mass",a,b);
+   });
+   var Moving = F2(function (a,b) {
+      return _U.insert("velocity",
+      a,
+      b);
+   });
+   var Positioned = F2(function (a,
+   b) {
+      return _U.insert("position",
+      a,
+      b);
+   });
+   var Dynamic = {ctor: "Dynamic"};
+   var applyForce = F2(function (force,
+   body) {
+      return _U.eq(body.bodyType,
+      Dynamic) ? _U.replace([["velocity"
+                             ,A2(Physics.Math.Point._op["<+>"],
+                             A2(Physics.Math.Point.scaleBy,
+                             1 / body.mass,
+                             force),
+                             body.velocity)]],
+      body) : body;
+   });
+   var updateBody = function (body) {
+      return _U.eq(body.bodyType,
+      Dynamic) ? _U.replace([["position"
+                             ,A2(Physics.Math.Point._op["<+>"],
+                             body.velocity,
+                             body.position)]],
+      body) : body;
+   };
+   var applyForceNow = F2(function (force,
+   body) {
+      return updateBody(A2(applyForce,
+      force,
+      body));
+   });
+   var Static = {ctor: "Static"};
+   var body = F4(function (bodyType,
+   mass,
+   initialPoint,
+   initialVelocity) {
+      return function () {
+         switch (bodyType.ctor)
+         {case "Dynamic": return {_: {}
+                                 ,bodyType: Dynamic
+                                 ,mass: mass
+                                 ,position: initialPoint
+                                 ,velocity: initialVelocity};
+            case "Static": return {_: {}
+                                  ,bodyType: Static
+                                  ,mass: mass
+                                  ,position: initialPoint
+                                  ,velocity: initialVelocity};}
+         _E.Case($moduleName,
+         "between lines 26 and 36");
+      }();
+   });
+   var dynamicBody = body(Dynamic);
+   var staticBody = body(Static);
+   _elm.Physics.Body.values = {_op: _op
+                              ,body: body
+                              ,staticBody: staticBody
+                              ,dynamicBody: dynamicBody
+                              ,force: force
+                              ,gravity: gravity
+                              ,earthGravity: earthGravity
+                              ,mercuryGravity: mercuryGravity
+                              ,venusGravity: venusGravity
+                              ,marsGravity: marsGravity
+                              ,jupiterGravity: jupiterGravity
+                              ,saturnGravity: saturnGravity
+                              ,uranusGravity: uranusGravity
+                              ,neptuneGravity: neptuneGravity
+                              ,plutoGravity: plutoGravity
+                              ,sunGravity: sunGravity
+                              ,moonGravity: moonGravity
+                              ,applyForce: applyForce
+                              ,updateBody: updateBody
+                              ,applyForceNow: applyForceNow
+                              ,Static: Static
+                              ,Dynamic: Dynamic
+                              ,Positioned: Positioned
+                              ,Moving: Moving
+                              ,Massive: Massive
+                              ,BodyTyped: BodyTyped};
+   return _elm.Physics.Body.values;
+};Elm.Physics = Elm.Physics || {};
+Elm.Physics.Math = Elm.Physics.Math || {};
+Elm.Physics.Math.Point = Elm.Physics.Math.Point || {};
+Elm.Physics.Math.Point.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Math = _elm.Physics.Math || {};
+   _elm.Physics.Math.Point = _elm.Physics.Math.Point || {};
+   if (_elm.Physics.Math.Point.values)
+   return _elm.Physics.Math.Point.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Math.Point";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var scaleBy = F2(function (n,
+   v) {
+      return _U.replace([["x"
+                         ,v.x * n]
+                        ,["y",v.y * n]],
+      v);
+   });
+   var manhattanNorm = function (v) {
+      return Basics.abs(v.x) + Basics.abs(v.y);
+   };
+   var norm = F2(function (n,v) {
+      return Math.pow(Math.pow(v.x,
+      n) + Math.pow(v.y,n),
+      1 / n);
+   });
+   var length = norm(2);
+   _op["<.>"] = F2(function (p,q) {
+      return p.x * q.x + p.y * q.y;
+   });
+   _op["</>"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x / q.y]
+                        ,["y",p.y / q.y]],
+      q);
+   });
+   _op["<*>"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x * q.y]
+                        ,["y",p.y * q.y]],
+      q);
+   });
+   _op["<->"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x - q.y]
+                        ,["y",p.y - q.y]],
+      q);
+   });
+   var distance = F2(function (p,
+   q) {
+      return length(A2(_op["<->"],
+      p,
+      q));
+   });
+   var manhattanDistance = F2(function (p,
+   q) {
+      return manhattanNorm(A2(_op["<->"],
+      p,
+      q));
+   });
+   _op["<+>"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x + q.x]
+                        ,["y",p.y + q.y]],
+      q);
+   });
+   var toFloatPoint = function (p) {
+      return _U.replace([["x"
+                         ,Basics.toFloat(p.x)]
+                        ,["y",Basics.toFloat(p.y)]],
+      p);
+   };
+   var point = F2(function (x,y) {
+      return {_: {},x: x,y: y};
+   });
+   var origin = A2(point,0,0);
+   var xUnit = A2(point,1,0);
+   var yUnit = A2(point,0,1);
+   var Point = F3(function (a,
+   b,
+   c) {
+      return _U.insert("y",
+      b,
+      _U.insert("x",a,c));
+   });
+   _elm.Physics.Math.Point.values = {_op: _op
+                                    ,point: point
+                                    ,toFloatPoint: toFloatPoint
+                                    ,origin: origin
+                                    ,xUnit: xUnit
+                                    ,yUnit: yUnit
+                                    ,norm: norm
+                                    ,manhattanNorm: manhattanNorm
+                                    ,length: length
+                                    ,scaleBy: scaleBy
+                                    ,distance: distance
+                                    ,manhattanDistance: manhattanDistance
+                                    ,Point: Point};
+   return _elm.Physics.Math.Point.values;
+};</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Main)</script><noscript></noscript></body></html>

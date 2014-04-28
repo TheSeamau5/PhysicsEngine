@@ -1,0 +1,44 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Main";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Body = Elm.Physics.Body.make(_elm);
+   var Physics = Physics || {};
+   Physics.Math = Physics.Math || {};
+   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var hero = A3(Physics.Body.dynamicBody,
+   40,
+   Physics.Math.Point.origin,
+   Physics.Math.Point.origin);
+   var main = Text.asText(A2(Physics.Body.applyForce,
+   Physics.Body.earthGravity,
+   hero));
+   _elm.Main.values = {_op: _op
+                      ,hero: hero
+                      ,main: main};
+   return _elm.Main.values;
+};

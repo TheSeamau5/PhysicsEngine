@@ -1,0 +1,118 @@
+Elm.Math = Elm.Math || {};
+Elm.Math.Point = Elm.Math.Point || {};
+Elm.Math.Point.make = function (_elm) {
+   "use strict";
+   _elm.Math = _elm.Math || {};
+   _elm.Math.Point = _elm.Math.Point || {};
+   if (_elm.Math.Point.values)
+   return _elm.Math.Point.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Math.Point";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var scaleBy = F2(function (n,
+   v) {
+      return _U.replace([["x"
+                         ,v.x * n]
+                        ,["y",v.y * n]],
+      v);
+   });
+   var manhattanNorm = function (v) {
+      return Basics.abs(v.x) + Basics.abs(v.y);
+   };
+   var norm = F2(function (n,v) {
+      return Math.pow(Math.pow(v.x,
+      n) + Math.pow(v.y,n),
+      1 / n);
+   });
+   var length = norm(2);
+   _op["<.>"] = F2(function (p,q) {
+      return p.x * q.x + p.y * q.y;
+   });
+   _op["</>"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x / q.y]
+                        ,["y",p.y / q.y]],
+      q);
+   });
+   _op["<*>"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x * q.y]
+                        ,["y",p.y * q.y]],
+      q);
+   });
+   _op["<->"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x - q.y]
+                        ,["y",p.y - q.y]],
+      q);
+   });
+   var distance = F2(function (p,
+   q) {
+      return length(A2(_op["<->"],
+      p,
+      q));
+   });
+   var manhattanDistance = F2(function (p,
+   q) {
+      return manhattanNorm(A2(_op["<->"],
+      p,
+      q));
+   });
+   _op["<+>"] = F2(function (p,q) {
+      return _U.replace([["x"
+                         ,p.x + q.x]
+                        ,["y",p.y + q.y]],
+      q);
+   });
+   var toFloatPoint = function (p) {
+      return _U.replace([["x"
+                         ,Basics.toFloat(p.x)]
+                        ,["y",Basics.toFloat(p.y)]],
+      p);
+   };
+   var point = F2(function (x,y) {
+      return {_: {},x: x,y: y};
+   });
+   var origin = A2(point,0,0);
+   var xUnit = A2(point,1,0);
+   var yUnit = A2(point,0,1);
+   var Point = F3(function (a,
+   b,
+   c) {
+      return _U.insert("y",
+      b,
+      _U.insert("x",a,c));
+   });
+   _elm.Math.Point.values = {_op: _op
+                            ,point: point
+                            ,toFloatPoint: toFloatPoint
+                            ,origin: origin
+                            ,xUnit: xUnit
+                            ,yUnit: yUnit
+                            ,norm: norm
+                            ,manhattanNorm: manhattanNorm
+                            ,length: length
+                            ,scaleBy: scaleBy
+                            ,distance: distance
+                            ,manhattanDistance: manhattanDistance
+                            ,Point: Point};
+   return _elm.Math.Point.values;
+};

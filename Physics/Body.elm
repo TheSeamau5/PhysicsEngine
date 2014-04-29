@@ -128,7 +128,7 @@ updateBody body =
       | otherwise -> body 
 
 {-  Quick and easy Function to apply a force and update the body.
-   This Function applies the force to the body and affects
-   the position of the body.-}
+    This Function applies the force to the body and affects
+    the position of the body.-}
 applyForceNow : Point a -> Body b c -> Body b c 
 applyForceNow force body = applyForce force body |> updateBody 

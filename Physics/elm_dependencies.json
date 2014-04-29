@@ -6,5 +6,6 @@
     ]
 , "exposed-modules" : 
     [ "Body"
+    , "Collider"
     ] 
 }

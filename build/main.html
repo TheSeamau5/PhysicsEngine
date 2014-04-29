@@ -25,6 +25,8 @@ Elm.Main.make = function (_elm) {
    var Physics = Physics || {};
    Physics.Body = Elm.Physics.Body.make(_elm);
    var Physics = Physics || {};
+   Physics.Collider = Elm.Physics.Collider.make(_elm);
+   var Physics = Physics || {};
    Physics.Math = Physics.Math || {};
    Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
    var Signal = Elm.Signal.make(_elm);
@@ -32,45 +34,89 @@ Elm.Main.make = function (_elm) {
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
-   var updatePhysics = Signal.foldp(Physics.Body.applyForceNow);
-   var getInput = A2(Signal.lift,
-   Physics.Math.Point.scaleBy(100),
-   A2(Signal.lift,
-   Physics.Math.Point.toFloatPoint,
-   Keyboard.arrows));
-   var drawBody = function (body) {
-      return A3(Graphics.Collage.collage,
-      400,
-      400,
-      _J.toList([A2(Graphics.Collage.move,
+   var makeScene = A2(Graphics.Collage.collage,
+   400,
+   400);
+   var tolist = A2(Basics.flip,
+   F2(function (x,y) {
+      return {ctor: "::"
+             ,_0: x
+             ,_1: y};
+   }),
+   _J.toList([]));
+   var drawGameObject = function (gameObject) {
+      return A2(Graphics.Collage.move,
       {ctor: "_Tuple2"
-      ,_0: body.position.x
-      ,_1: body.position.y},
+      ,_0: gameObject.collider.center.x
+      ,_1: gameObject.collider.center.y},
       A2(Graphics.Collage.filled,
-      Color.red,
-      Graphics.Collage.circle(50)))]));
+      gameObject.color,
+      A2(Graphics.Collage.rect,
+      gameObject.collider.width,
+      gameObject.collider.height)));
    };
-   var render = function (body) {
-      return A2(Signal.lift,
-      drawBody,
-      body);
+   var drawScene = function ($) {
+      return makeScene(List.map(drawGameObject)($));
    };
-   var update = function (body) {
-      return render(updatePhysics(body)(getInput));
-   };
-   var hero = A3(Physics.Body.dynamicBody,
-   50,
+   var gameObject = F3(function (collider,
+   body,
+   color) {
+      return {_: {}
+             ,body: body
+             ,collider: collider
+             ,color: color};
+   });
+   var squareObject = F5(function (color,
+   mass,
+   center,
+   width,
+   height) {
+      return A3(gameObject,
+      A3(Physics.Collider.collider,
+      center,
+      width,
+      height),
+      A3(Physics.Body.dynamicBody,
+      mass,
+      center,
+      Physics.Math.Point.origin),
+      color);
+   });
+   var hero = A5(squareObject,
+   Color.green,
+   30,
    Physics.Math.Point.origin,
-   Physics.Math.Point.origin);
-   var main = update(hero);
+   50,
+   50);
+   var evil = A5(squareObject,
+   Color.red,
+   30,
+   A2(Physics.Math.Point.point,
+   100,
+   0),
+   50,
+   50);
+   var main = drawScene(_J.toList([hero
+                                  ,evil]));
+   var GameObject = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,body: b
+             ,collider: a
+             ,color: c};
+   });
    _elm.Main.values = {_op: _op
+                      ,gameObject: gameObject
+                      ,drawGameObject: drawGameObject
+                      ,tolist: tolist
+                      ,makeScene: makeScene
+                      ,drawScene: drawScene
+                      ,squareObject: squareObject
                       ,hero: hero
-                      ,drawBody: drawBody
-                      ,render: render
-                      ,getInput: getInput
-                      ,updatePhysics: updatePhysics
-                      ,update: update
-                      ,main: main};
+                      ,evil: evil
+                      ,main: main
+                      ,GameObject: GameObject};
    return _elm.Main.values;
 };Elm.Physics = Elm.Physics || {};
 Elm.Physics.Body = Elm.Physics.Body || {};
@@ -208,6 +254,83 @@ Elm.Physics.Body.make = function (_elm) {
                               ,Massive: Massive
                               ,BodyTyped: BodyTyped};
    return _elm.Physics.Body.values;
+};Elm.Physics = Elm.Physics || {};
+Elm.Physics.Collider = Elm.Physics.Collider || {};
+Elm.Physics.Collider.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Collider = _elm.Physics.Collider || {};
+   if (_elm.Physics.Collider.values)
+   return _elm.Physics.Collider.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Collider";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Math = Physics.Math || {};
+   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var collide = F2(function (collider1,
+   collider2) {
+      return function () {
+         var halfHeight2 = collider2.height / 2;
+         var top2 = collider2.center.y + halfHeight2;
+         var bottom2 = collider2.center.y - halfHeight2;
+         var halfHeight1 = collider1.height / 2;
+         var top1 = collider1.center.y + halfHeight1;
+         var bottom1 = collider1.center.y - halfHeight1;
+         var halfWidth2 = collider2.width / 2;
+         var left2 = collider2.center.x - halfWidth2;
+         var right2 = collider2.center.x + halfWidth2;
+         var halfWidth1 = collider1.width / 2;
+         var left1 = collider1.center.x - halfWidth1;
+         var right1 = collider1.center.x + halfWidth1;
+         return Basics.not(_U.cmp(left2,
+         right1) > 0 || (_U.cmp(right2,
+         left1) < 0 || (_U.cmp(top2,
+         bottom1) > 0 || _U.cmp(bottom2,
+         top1) < 0)));
+      }();
+   });
+   var collider = F3(function (center,
+   width,
+   height) {
+      return {_: {}
+             ,center: center
+             ,height: height
+             ,width: width};
+   });
+   var Collider = F4(function (a,
+   b,
+   c,
+   d) {
+      return _U.insert("height",
+      c,
+      _U.insert("width",
+      b,
+      _U.insert("center",a,d)));
+   });
+   _elm.Physics.Collider.values = {_op: _op
+                                  ,collider: collider
+                                  ,collide: collide
+                                  ,Collider: Collider};
+   return _elm.Physics.Collider.values;
 };Elm.Physics = Elm.Physics || {};
 Elm.Physics.Math = Elm.Physics.Math || {};
 Elm.Physics.Math.Point = Elm.Physics.Math.Point || {};

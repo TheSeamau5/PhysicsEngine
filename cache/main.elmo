@@ -24,6 +24,8 @@ Elm.Main.make = function (_elm) {
    var Physics = Physics || {};
    Physics.Body = Elm.Physics.Body.make(_elm);
    var Physics = Physics || {};
+   Physics.Collider = Elm.Physics.Collider.make(_elm);
+   var Physics = Physics || {};
    Physics.Math = Physics.Math || {};
    Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
    var Signal = Elm.Signal.make(_elm);
@@ -31,44 +33,88 @@ Elm.Main.make = function (_elm) {
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
-   var updatePhysics = Signal.foldp(Physics.Body.applyForceNow);
-   var getInput = A2(Signal.lift,
-   Physics.Math.Point.scaleBy(100),
-   A2(Signal.lift,
-   Physics.Math.Point.toFloatPoint,
-   Keyboard.arrows));
-   var drawBody = function (body) {
-      return A3(Graphics.Collage.collage,
-      400,
-      400,
-      _J.toList([A2(Graphics.Collage.move,
+   var makeScene = A2(Graphics.Collage.collage,
+   400,
+   400);
+   var tolist = A2(Basics.flip,
+   F2(function (x,y) {
+      return {ctor: "::"
+             ,_0: x
+             ,_1: y};
+   }),
+   _J.toList([]));
+   var drawGameObject = function (gameObject) {
+      return A2(Graphics.Collage.move,
       {ctor: "_Tuple2"
-      ,_0: body.position.x
-      ,_1: body.position.y},
+      ,_0: gameObject.collider.center.x
+      ,_1: gameObject.collider.center.y},
       A2(Graphics.Collage.filled,
-      Color.red,
-      Graphics.Collage.circle(50)))]));
+      gameObject.color,
+      A2(Graphics.Collage.rect,
+      gameObject.collider.width,
+      gameObject.collider.height)));
    };
-   var render = function (body) {
-      return A2(Signal.lift,
-      drawBody,
-      body);
+   var drawScene = function ($) {
+      return makeScene(List.map(drawGameObject)($));
    };
-   var update = function (body) {
-      return render(updatePhysics(body)(getInput));
-   };
-   var hero = A3(Physics.Body.dynamicBody,
-   50,
+   var gameObject = F3(function (collider,
+   body,
+   color) {
+      return {_: {}
+             ,body: body
+             ,collider: collider
+             ,color: color};
+   });
+   var squareObject = F5(function (color,
+   mass,
+   center,
+   width,
+   height) {
+      return A3(gameObject,
+      A3(Physics.Collider.collider,
+      center,
+      width,
+      height),
+      A3(Physics.Body.dynamicBody,
+      mass,
+      center,
+      Physics.Math.Point.origin),
+      color);
+   });
+   var hero = A5(squareObject,
+   Color.green,
+   30,
    Physics.Math.Point.origin,
-   Physics.Math.Point.origin);
-   var main = update(hero);
+   50,
+   50);
+   var evil = A5(squareObject,
+   Color.red,
+   30,
+   A2(Physics.Math.Point.point,
+   100,
+   0),
+   50,
+   50);
+   var main = drawScene(_J.toList([hero
+                                  ,evil]));
+   var GameObject = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,body: b
+             ,collider: a
+             ,color: c};
+   });
    _elm.Main.values = {_op: _op
+                      ,gameObject: gameObject
+                      ,drawGameObject: drawGameObject
+                      ,tolist: tolist
+                      ,makeScene: makeScene
+                      ,drawScene: drawScene
+                      ,squareObject: squareObject
                       ,hero: hero
-                      ,drawBody: drawBody
-                      ,render: render
-                      ,getInput: getInput
-                      ,updatePhysics: updatePhysics
-                      ,update: update
-                      ,main: main};
+                      ,evil: evil
+                      ,main: main
+                      ,GameObject: GameObject};
    return _elm.Main.values;
 };

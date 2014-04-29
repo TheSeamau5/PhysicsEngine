@@ -1,0 +1,78 @@
+Elm.Physics = Elm.Physics || {};
+Elm.Physics.Collider = Elm.Physics.Collider || {};
+Elm.Physics.Collider.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Collider = _elm.Physics.Collider || {};
+   if (_elm.Physics.Collider.values)
+   return _elm.Physics.Collider.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Collider";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Math = Physics.Math || {};
+   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var collide = F2(function (collider1,
+   collider2) {
+      return function () {
+         var halfHeight2 = collider2.height / 2;
+         var top2 = collider2.center.y + halfHeight2;
+         var bottom2 = collider2.center.y - halfHeight2;
+         var halfHeight1 = collider1.height / 2;
+         var top1 = collider1.center.y + halfHeight1;
+         var bottom1 = collider1.center.y - halfHeight1;
+         var halfWidth2 = collider2.width / 2;
+         var left2 = collider2.center.x - halfWidth2;
+         var right2 = collider2.center.x + halfWidth2;
+         var halfWidth1 = collider1.width / 2;
+         var left1 = collider1.center.x - halfWidth1;
+         var right1 = collider1.center.x + halfWidth1;
+         return Basics.not(_U.cmp(left2,
+         right1) > 0 || (_U.cmp(right2,
+         left1) < 0 || (_U.cmp(top2,
+         bottom1) > 0 || _U.cmp(bottom2,
+         top1) < 0)));
+      }();
+   });
+   var collider = F3(function (center,
+   width,
+   height) {
+      return {_: {}
+             ,center: center
+             ,height: height
+             ,width: width};
+   });
+   var Collider = F4(function (a,
+   b,
+   c,
+   d) {
+      return _U.insert("height",
+      c,
+      _U.insert("width",
+      b,
+      _U.insert("center",a,d)));
+   });
+   _elm.Physics.Collider.values = {_op: _op
+                                  ,collider: collider
+                                  ,collide: collide
+                                  ,Collider: Collider};
+   return _elm.Physics.Collider.values;
+};

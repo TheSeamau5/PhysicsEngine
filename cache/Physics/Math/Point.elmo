@@ -44,7 +44,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
       n) + Math.pow(v.y,n),
       1 / n);
    });
-   var length = norm(2);
+   var magnitude = norm(2);
    _op["<.>"] = F2(function (p,q) {
       return p.x * q.x + p.y * q.y;
    });
@@ -68,7 +68,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
    });
    var distance = F2(function (p,
    q) {
-      return length(A2(_op["<->"],
+      return magnitude(A2(_op["<->"],
       p,
       q));
    });
@@ -111,7 +111,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
                                     ,yUnit: yUnit
                                     ,norm: norm
                                     ,manhattanNorm: manhattanNorm
-                                    ,length: length
+                                    ,magnitude: magnitude
                                     ,scaleBy: scaleBy
                                     ,distance: distance
                                     ,manhattanDistance: manhattanDistance

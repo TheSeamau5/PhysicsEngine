@@ -17,6 +17,7 @@ type Massive a      = { a | mass      : Float    }
 -- BodyTyped is an extensible type with a "bodyType" field
 type BodyTyped a    = { a | bodyType  : BodyType }
 
+
 -- A body is any record with mass, position, velocity, and a BodyType
 type Body p m = Massive (BodyTyped ( Positioned ( Moving {} m ) p))
 
@@ -102,33 +103,27 @@ moonGravity : Point {}
 moonGravity     = gravity 1.62
 
 
-{-  Function to apply a force to a body 
-   ( This function assumes that the timestep == 1)
-   ( This greatly simplifies the calculations )
-   ( As it means that acceleration == velocity )
-   ( This means that newVelocity = oldVelocity + force / mass)
-   ( Note : This function only updates the velocity, not the position)-}
-applyForce  : Point a -> Body b c -> Body b c 
-applyForce force body = 
+{-  Function to apply a force to a body.
+    Note : This function only updates the velocity, not the position -}
+applyForce  : Point a -> Body b c -> Float -> Body b c 
+applyForce force body timestep = 
   if  | (body.bodyType == Dynamic) -> 
-            { body | velocity <- ( scaleBy ( 1 / body.mass ) force ) <+> body.velocity }
+            { body | velocity <- ( scaleBy ( timestep / body.mass ) force ) <+> body.velocity }
       | otherwise -> body
 
-{-  Function to update a body's position by its velocity
-  ( This function must be called in order for a body to move)
-  ( The applyForce function does not change a body's position)
-  ( Only the updateBody function does)
-  ( Again, the timeStep is assumed to be 1)
-  ( This means that newPosition = oldPosition + velocity)
-  -}
-updateBody : Body a b -> Body a b 
-updateBody body =
+
+{-  Function to update a body's position by its velocity.
+    Note : This function must be called in order for a body to move
+    The applyForce function does not change a body's position)
+    Only the updateBody function does -}
+updateBody : Body a b -> Float -> Body a b 
+updateBody body timestep =
   if  | (body.bodyType == Dynamic) -> 
-            { body | position <- body.velocity <+> body.position }
+            { body | position <- (scaleBy timestep body.velocity) <+> body.position }
       | otherwise -> body 
 
 {-  Quick and easy Function to apply a force and update the body.
     This Function applies the force to the body and affects
     the position of the body.-}
-applyForceNow : Point a -> Body b c -> Body b c 
-applyForceNow force body = applyForce force body |> updateBody 
+applyForceNow : Point a -> Body b c -> Float -> Body b c 
+applyForceNow force body timestep = applyForce force body timestep |> updateBody timestep

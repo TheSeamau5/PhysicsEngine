@@ -52,9 +52,9 @@ norm n v = ((v.x ^ n) + (v.y ^ n)) ^ (1 / n)
 manhattanNorm : Point a -> number
 manhattanNorm v = abs(v.x) + abs(v.y)
 
--- length / magnitude of a vector
-length : Point a -> number
-length = norm 2
+-- magnitude of a vector
+magnitude : Point a -> number
+magnitude = norm 2
 
 -- scalar multiplication
 scaleBy : number -> Point a -> Point a
@@ -62,7 +62,7 @@ scaleBy n v = { v | x <- v.x * n , y <- v.y * n }
 
 -- distance between two points
 distance : Point a -> Point b -> number
-distance p q = length (p <-> q)
+distance p q = magnitude (p <-> q)
 
 -- manhattan / taxicab distance between two points
 manhattanDistance : Point a -> Point b -> number

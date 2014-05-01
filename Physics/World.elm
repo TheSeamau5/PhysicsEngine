@@ -1,0 +1,1 @@
+type World a b = { a | gravity : Point b }

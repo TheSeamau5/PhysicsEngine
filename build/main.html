@@ -34,16 +34,29 @@ Elm.Main.make = function (_elm) {
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
-   var makeScene = A2(Graphics.Collage.collage,
-   400,
-   400);
-   var tolist = A2(Basics.flip,
+   var getInput = A3(Signal.foldp,
    F2(function (x,y) {
-      return {ctor: "::"
-             ,_0: x
-             ,_1: y};
+      return A2(Physics.Math.Point._op["<+>"],
+      x,
+      y);
    }),
-   _J.toList([]));
+   Physics.Math.Point.origin,
+   A2(Signal.lift,
+   Physics.Math.Point.toFloatPoint,
+   Keyboard.arrows));
+   var updateObject = F2(function (obj,
+   p) {
+      return _U.replace([["collider"
+                         ,A3(Physics.Collider.collider,
+                         obj.body.position,
+                         obj.collider.width,
+                         obj.collider.height)]
+                        ,["body"
+                         ,A2(Physics.Body.applyForceNow,
+                         p,
+                         obj.body)]],
+      obj);
+   });
    var drawGameObject = function (gameObject) {
       return A2(Graphics.Collage.move,
       {ctor: "_Tuple2"
@@ -55,9 +68,17 @@ Elm.Main.make = function (_elm) {
       gameObject.collider.width,
       gameObject.collider.height)));
    };
-   var drawScene = function ($) {
-      return makeScene(List.map(drawGameObject)($));
-   };
+   var drawScene = F2(function (width,
+   height) {
+      return function ($) {
+         return A2(Graphics.Collage.collage,
+         width,
+         height)(List.map(drawGameObject)($));
+      };
+   });
+   var render = Signal.lift(A2(drawScene,
+   400,
+   400));
    var gameObject = F3(function (collider,
    body,
    color) {
@@ -66,38 +87,28 @@ Elm.Main.make = function (_elm) {
              ,collider: collider
              ,color: color};
    });
-   var squareObject = F5(function (color,
+   var squareObject = F4(function (color,
    mass,
    center,
-   width,
-   height) {
+   size) {
       return A3(gameObject,
       A3(Physics.Collider.collider,
       center,
-      width,
-      height),
+      size,
+      size),
       A3(Physics.Body.dynamicBody,
       mass,
       center,
       Physics.Math.Point.origin),
       color);
    });
-   var hero = A5(squareObject,
-   Color.green,
-   30,
-   Physics.Math.Point.origin,
+   var hero = A4(squareObject,
+   Color.blue,
    50,
-   50);
-   var evil = A5(squareObject,
-   Color.red,
-   30,
    A2(Physics.Math.Point.point,
-   100,
-   0),
    50,
+   50),
    50);
-   var main = drawScene(_J.toList([hero
-                                  ,evil]));
    var GameObject = F3(function (a,
    b,
    c) {
@@ -106,15 +117,101 @@ Elm.Main.make = function (_elm) {
              ,collider: a
              ,color: c};
    });
+   var removeNth = F2(function (n,
+   list) {
+      return _L.append(A2(List.take,
+      n - 1,
+      list),
+      A2(List.drop,n,list));
+   });
+   var takeNth = function (n) {
+      return function ($) {
+         return List.last(List.take(n)($));
+      };
+   };
+   var applyNth = F3(function (n,
+   f,
+   list) {
+      return A2(List.map,
+      function ($) {
+         return f(takeNth(n)($));
+      }(list),
+      A2(removeNth,n,list));
+   });
+   var toList = A2(Basics.flip,
+   F2(function (x,y) {
+      return {ctor: "::"
+             ,_0: x
+             ,_1: y};
+   }),
+   _J.toList([]));
+   var updatePhysics = F2(function (obj,
+   p) {
+      return A2(Signal.lift,
+      toList,
+      A3(Signal.foldp,
+      Basics.flip(updateObject),
+      obj,
+      p));
+   });
+   var update = function (obj) {
+      return render(updatePhysics(obj)(getInput));
+   };
+   var main = update(hero);
+   var swap2_3 = F4(function (f,
+   x,
+   y,
+   z) {
+      return A3(f,x,z,y);
+   });
+   var swap3_2 = swap2_3;
+   var swap1_3 = F4(function (f,
+   x,
+   y,
+   z) {
+      return A3(f,z,y,x);
+   });
+   var swap3_1 = swap1_3;
+   var toFront_3 = swap2_3(swap1_3);
+   var applyAll = F2(function (f,
+   list) {
+      return A2(List.map,
+      A3(toFront_3,applyNth,f,list),
+      _L.range(1,List.length(list)));
+   });
+   var swap1_2 = Basics.flip;
+   var swap2_1 = swap1_2;
+   var toFront_2 = swap1_2;
+   var toBack_2 = swap1_2;
+   var toBack_3 = function ($) {
+      return swap1_2(swap2_3($));
+   };
    _elm.Main.values = {_op: _op
+                      ,swap1_2: swap1_2
+                      ,swap1_3: swap1_3
+                      ,swap2_1: swap2_1
+                      ,swap2_3: swap2_3
+                      ,swap3_1: swap3_1
+                      ,swap3_2: swap3_2
+                      ,toFront_2: toFront_2
+                      ,toFront_3: toFront_3
+                      ,toBack_2: toBack_2
+                      ,toBack_3: toBack_3
+                      ,toList: toList
+                      ,takeNth: takeNth
+                      ,removeNth: removeNth
+                      ,applyNth: applyNth
+                      ,applyAll: applyAll
                       ,gameObject: gameObject
-                      ,drawGameObject: drawGameObject
-                      ,tolist: tolist
-                      ,makeScene: makeScene
-                      ,drawScene: drawScene
                       ,squareObject: squareObject
+                      ,drawGameObject: drawGameObject
+                      ,drawScene: drawScene
                       ,hero: hero
-                      ,evil: evil
+                      ,render: render
+                      ,updateObject: updateObject
+                      ,updatePhysics: updatePhysics
+                      ,getInput: getInput
+                      ,update: update
                       ,main: main
                       ,GameObject: GameObject};
    return _elm.Main.values;
@@ -377,7 +474,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
       n) + Math.pow(v.y,n),
       1 / n);
    });
-   var length = norm(2);
+   var magnitude = norm(2);
    _op["<.>"] = F2(function (p,q) {
       return p.x * q.x + p.y * q.y;
    });
@@ -401,7 +498,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
    });
    var distance = F2(function (p,
    q) {
-      return length(A2(_op["<->"],
+      return magnitude(A2(_op["<->"],
       p,
       q));
    });
@@ -444,7 +541,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
                                     ,yUnit: yUnit
                                     ,norm: norm
                                     ,manhattanNorm: manhattanNorm
-                                    ,length: length
+                                    ,magnitude: magnitude
                                     ,scaleBy: scaleBy
                                     ,distance: distance
                                     ,manhattanDistance: manhattanDistance

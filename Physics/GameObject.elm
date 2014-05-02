@@ -5,7 +5,7 @@ import Physics.Utilities.Basics (..)
 import Physics.Utilities.List (..)
 import Physics.Body (..)
 import Physics.Collider (..)
-
+{-
 type GameObject a b c d = { collider  : Collider a b
                           , body      : Body c d
                           , color     : Color 
@@ -43,3 +43,4 @@ updateObject obj timestep =
                                  (obj.collider.height)
         , body      <- updateBody obj.body timestep 
   }
+-}

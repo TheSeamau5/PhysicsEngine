@@ -1,5 +1,6 @@
 module Physics.Math.Point where
 
+-------------------------------------------
 -- 2D Extensible Point Type
 type Point a = { a | x : Float , y : Float }
 
@@ -28,21 +29,31 @@ yUnit = point 0 1
 (<+>) : Point a -> Point b -> Point b
 p <+> q = { q | x <- p.x + q.x , y <- p.y + q.y }
 
+pAdd = (<+>)
+
 -- Function to subtract two points
 (<->) : Point a -> Point b -> Point b
 p <-> q = { q | x <- p.x - q.y , y <- p.y - q.y }
+
+pSubtract = (<->)
 
 -- Function to multiply two points
 (<*>) : Point a -> Point b -> Point b
 p <*> q = { q | x <- p.x * q.y , y <- p.y * q.y }
 
+pMultiply = (<*>)
+
 -- Function to divide two points
 (</>) : Point a -> Point b -> Point b
 p </> q = { q | x <- p.x / q.y , y <- p.y / q.y }
 
+pDivide = (</>)
+
 -- Function to calculate the dot product of two points
 (<.>) : Point a -> Point b -> Float
 p <.> q = p.x * q.x + p.y * q.y
+
+pDot = (<.>)
 
 -- p-norm of a Point
 norm : number -> Point a -> number
@@ -67,3 +78,6 @@ distance p q = magnitude (p <-> q)
 -- manhattan / taxicab distance between two points
 manhattanDistance : Point a -> Point b -> number
 manhattanDistance p q = manhattanNorm (p <-> q)
+
+center : Point a -> Point b ->  Point b
+center p q = scaleBy 0.5 (p <+> q)

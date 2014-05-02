@@ -2,6 +2,24 @@ module Physics.Utilities.List where
 
 import Physics.Utilities.Basics (..)
 
+-- Safe operator to find nth element in list
+-- returns Nothing in case of failure 
+infixl 9 !!
+(!!) : [a] -> Int -> Maybe a
+list !! n =
+  if | (n <= 0) -> Nothing
+     | otherwise -> 
+         case ( list , n ) of 
+           ( []      , _ ) -> Nothing
+           ( x :: xs , 1 ) -> Just x
+           ( _ :: xs , n ) -> xs !! (n - 1)
+
+-- Unsafe quick and dirty operator to find 
+-- nth element in list
+infixl 9 !!!
+(!!!) : [a] -> Int ->  a
+list !!! n = head . drop n
+
 -- Turns an object into a list with one element
 toList : a -> [a]
 toList = (flip (::)) []

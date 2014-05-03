@@ -1,0 +1,51 @@
+Elm.Physics = Elm.Physics || {};
+Elm.Physics.Physic = Elm.Physics.Physic || {};
+Elm.Physics.Physic.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Physic = _elm.Physics.Physic || {};
+   if (_elm.Physics.Physic.values)
+   return _elm.Physics.Physic.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Physic";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Body = Elm.Physics.Body.make(_elm);
+   var Physics = Physics || {};
+   Physics.Collider = Elm.Physics.Collider.make(_elm);
+   var Physics = Physics || {};
+   Physics.Math = Physics.Math || {};
+   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Physics = Physics || {};
+   Physics.Utilities = Physics.Utilities || {};
+   Physics.Utilities.Basics = Elm.Physics.Utilities.Basics.make(_elm);
+   var Physics = Physics || {};
+   Physics.Utilities = Physics.Utilities || {};
+   Physics.Utilities.List = Elm.Physics.Utilities.List.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var Physic = F2(function (a,b) {
+      return {_: {}
+             ,body: b
+             ,collider: a};
+   });
+   _elm.Physics.Physic.values = {_op: _op
+                                ,Physic: Physic};
+   return _elm.Physics.Physic.values;
+};

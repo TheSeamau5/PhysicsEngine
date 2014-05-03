@@ -33,19 +33,19 @@ pAdd = (<+>)
 
 -- Function to subtract two points
 (<->) : Point a -> Point b -> Point b
-p <-> q = { q | x <- p.x - q.y , y <- p.y - q.y }
+p <-> q = { q | x <- p.x - q.x , y <- p.y - q.y }
 
 pSubtract = (<->)
 
 -- Function to multiply two points
 (<*>) : Point a -> Point b -> Point b
-p <*> q = { q | x <- p.x * q.y , y <- p.y * q.y }
+p <*> q = { q | x <- p.x * q.x , y <- p.y * q.y }
 
 pMultiply = (<*>)
 
 -- Function to divide two points
 (</>) : Point a -> Point b -> Point b
-p </> q = { q | x <- p.x / q.y , y <- p.y / q.y }
+p </> q = { q | x <- p.x / q.x , y <- p.y / q.y }
 
 pDivide = (</>)
 

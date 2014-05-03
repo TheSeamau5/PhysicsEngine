@@ -48,23 +48,38 @@ Elm.Physics.Math.Point.make = function (_elm) {
    _op["<.>"] = F2(function (p,q) {
       return p.x * q.x + p.y * q.y;
    });
+   var pDot = F2(function (x,y) {
+      return A2(_op["<.>"],x,y);
+   });
    _op["</>"] = F2(function (p,q) {
       return _U.replace([["x"
-                         ,p.x / q.y]
+                         ,p.x / q.x]
                         ,["y",p.y / q.y]],
       q);
    });
+   var pDivide = F2(function (x,
+   y) {
+      return A2(_op["</>"],x,y);
+   });
    _op["<*>"] = F2(function (p,q) {
       return _U.replace([["x"
-                         ,p.x * q.y]
+                         ,p.x * q.x]
                         ,["y",p.y * q.y]],
       q);
    });
+   var pMultiply = F2(function (x,
+   y) {
+      return A2(_op["<*>"],x,y);
+   });
    _op["<->"] = F2(function (p,q) {
       return _U.replace([["x"
-                         ,p.x - q.y]
+                         ,p.x - q.x]
                         ,["y",p.y - q.y]],
       q);
+   });
+   var pSubtract = F2(function (x,
+   y) {
+      return A2(_op["<->"],x,y);
    });
    var distance = F2(function (p,
    q) {
@@ -83,6 +98,14 @@ Elm.Physics.Math.Point.make = function (_elm) {
                          ,p.x + q.x]
                         ,["y",p.y + q.y]],
       q);
+   });
+   var pAdd = F2(function (x,y) {
+      return A2(_op["<+>"],x,y);
+   });
+   var center = F2(function (p,q) {
+      return A2(scaleBy,
+      0.5,
+      A2(_op["<+>"],p,q));
    });
    var toFloatPoint = function (p) {
       return _U.replace([["x"
@@ -109,12 +132,18 @@ Elm.Physics.Math.Point.make = function (_elm) {
                                     ,origin: origin
                                     ,xUnit: xUnit
                                     ,yUnit: yUnit
+                                    ,pAdd: pAdd
+                                    ,pSubtract: pSubtract
+                                    ,pMultiply: pMultiply
+                                    ,pDivide: pDivide
+                                    ,pDot: pDot
                                     ,norm: norm
                                     ,manhattanNorm: manhattanNorm
                                     ,magnitude: magnitude
                                     ,scaleBy: scaleBy
                                     ,distance: distance
                                     ,manhattanDistance: manhattanDistance
+                                    ,center: center
                                     ,Point: Point};
    return _elm.Physics.Math.Point.values;
 };

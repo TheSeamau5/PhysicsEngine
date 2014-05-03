@@ -1,10 +1,18 @@
-module Physics.GameObject where
+module Physics.Physic where
 
 import Physics.Math.Point (..)
 import Physics.Utilities.Basics (..)
 import Physics.Utilities.List (..)
 import Physics.Body (..)
 import Physics.Collider (..)
+
+
+type Physic = { collider : Collider
+              , body : Body {} {}
+              }
+
+
+
 {-
 type GameObject a b c d = { collider  : Collider a b
                           , body      : Body c d

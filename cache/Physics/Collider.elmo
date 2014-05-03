@@ -25,26 +25,149 @@ Elm.Physics.Collider.make = function (_elm) {
    var Physics = Physics || {};
    Physics.Math = Physics.Math || {};
    Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Physics = Physics || {};
+   Physics.Utilities = Physics.Utilities || {};
+   Physics.Utilities.List = Elm.Physics.Utilities.List.make(_elm);
    var Signal = Elm.Signal.make(_elm);
    var String = Elm.String.make(_elm);
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
-   var collide = F2(function (collider1,
-   collider2) {
+   var polygonVSpolygon = F2(function (polygon1,
+   polygon2) {
+      return false;
+   });
+   var edgeVSpolygon = F2(function (edge,
+   polygon) {
+      return false;
+   });
+   var polygonVSedge = F2(function (polygon,
+   edge) {
+      return A2(edgeVSpolygon,
+      edge,
+      polygon);
+   });
+   var edgeVSedge = F2(function (edge1,
+   edge2) {
+      return false;
+   });
+   var circleVSpolygon = F2(function (circle,
+   polygon) {
+      return false;
+   });
+   var polygonVScircle = F2(function (polygon,
+   circle) {
+      return A2(circleVSpolygon,
+      circle,
+      polygon);
+   });
+   var circleVSedge = F2(function (circle,
+   edge) {
+      return false;
+   });
+   var edgeVScircle = F2(function (edge,
+   circle) {
+      return A2(circleVSedge,
+      circle,
+      edge);
+   });
+   var circleVScircle = F2(function (circle1,
+   circle2) {
+      return _U.cmp(circle1.radius + circle2.radius,
+      A2(Physics.Math.Point.distance,
+      circle1.center,
+      circle2.center)) > 0;
+   });
+   var aabbVSpolygon = F2(function (aabb,
+   polygon) {
+      return false;
+   });
+   var polygonVSaabb = F2(function (polygon,
+   aabb) {
+      return A2(aabbVSpolygon,
+      aabb,
+      polygon);
+   });
+   var aabbVSedge = F2(function (aabb,
+   edge) {
+      return false;
+   });
+   var edgeVSaabb = F2(function (edge,
+   aabb) {
+      return A2(aabbVSedge,
+      aabb,
+      edge);
+   });
+   var aabbVScircle = F2(function (aabb,
+   circle) {
       return function () {
-         var halfHeight2 = collider2.height / 2;
-         var top2 = collider2.center.y + halfHeight2;
-         var bottom2 = collider2.center.y - halfHeight2;
-         var halfHeight1 = collider1.height / 2;
-         var top1 = collider1.center.y + halfHeight1;
-         var bottom1 = collider1.center.y - halfHeight1;
-         var halfWidth2 = collider2.width / 2;
-         var left2 = collider2.center.x - halfWidth2;
-         var right2 = collider2.center.x + halfWidth2;
-         var halfWidth1 = collider1.width / 2;
-         var left1 = collider1.center.x - halfWidth1;
-         var right1 = collider1.center.x + halfWidth1;
+         var closestPointToCircle = F2(function (r,
+         c) {
+            return function () {
+               var centerY = c.center.y;
+               var centerX = c.center.x;
+               var halfHeight = r.height / 2;
+               var top = r.center.y + halfHeight;
+               var bottom = r.center.y - halfHeight;
+               var halfWidth = r.width / 2;
+               var left = r.center.x - halfWidth;
+               var right = r.center.x + halfWidth;
+               return A2(Physics.Math.Point.point,
+               A2(Basics.max,
+               A2(Basics.min,centerX,right),
+               left),
+               A2(Basics.max,
+               A2(Basics.min,centerY,bottom),
+               top));
+            }();
+         });
+         var pointInRectangle = F2(function (p,
+         r) {
+            return function () {
+               var halfHeight = r.height / 2;
+               var top = r.center.y + halfHeight;
+               var bottom = r.center.y - halfHeight;
+               var halfWidth = r.width / 2;
+               var left = r.center.x - halfWidth;
+               var right = r.center.x + halfWidth;
+               return _U.cmp(p.x,
+               right) < 0 && (_U.cmp(p.x,
+               left) > 0 && (_U.cmp(p.y,
+               top) < 0 && _U.cmp(p.y,
+               bottom) > 0));
+            }();
+         });
+         return A2(pointInRectangle,
+         circle.center,
+         aabb) || _U.cmp(A2(Physics.Math.Point.distance,
+         A2(closestPointToCircle,
+         aabb,
+         circle),
+         circle.center),
+         circle.radius) < 0;
+      }();
+   });
+   var circleVSaabb = F2(function (circle,
+   aabb) {
+      return A2(aabbVScircle,
+      aabb,
+      circle);
+   });
+   var aabbVSaabb = F2(function (aabb1,
+   aabb2) {
+      return function () {
+         var halfHeight2 = aabb2.height / 2;
+         var top2 = aabb2.center.y + halfHeight2;
+         var bottom2 = aabb2.center.y - halfHeight2;
+         var halfWidth2 = aabb2.width / 2;
+         var left2 = aabb2.center.x - halfWidth2;
+         var right2 = aabb2.center.x + halfWidth2;
+         var halfHeight1 = aabb1.height / 2;
+         var top1 = aabb1.center.y + halfHeight1;
+         var bottom1 = aabb1.center.y - halfHeight1;
+         var halfWidth1 = aabb1.width / 2;
+         var left1 = aabb1.center.x - halfWidth1;
+         var right1 = aabb1.center.x + halfWidth1;
          return Basics.not(_U.cmp(left2,
          right1) > 0 || (_U.cmp(right2,
          left1) < 0 || (_U.cmp(top2,
@@ -52,27 +175,212 @@ Elm.Physics.Collider.make = function (_elm) {
          top1) < 0)));
       }();
    });
-   var collider = F3(function (center,
+   var PolygonCollider = function (a) {
+      return {ctor: "PolygonCollider"
+             ,_0: a};
+   };
+   var polygonCollider = function (points) {
+      return PolygonCollider(points);
+   };
+   var EdgeCollider = function (a) {
+      return {ctor: "EdgeCollider"
+             ,_0: a};
+   };
+   var edgeCollider = F2(function (vertex1,
+   vertex2) {
+      return EdgeCollider({_: {}
+                          ,vertex1: vertex1
+                          ,vertex2: vertex2});
+   });
+   var CircleCollider = function (a) {
+      return {ctor: "CircleCollider"
+             ,_0: a};
+   };
+   var circleCollider = F2(function (center,
+   radius) {
+      return CircleCollider({_: {}
+                            ,center: center
+                            ,radius: radius});
+   });
+   var AABBCollider = function (a) {
+      return {ctor: "AABBCollider"
+             ,_0: a};
+   };
+   var aabbCollider = F3(function (center,
    width,
    height) {
-      return {_: {}
-             ,center: center
-             ,height: height
-             ,width: width};
+      return AABBCollider({_: {}
+                          ,center: center
+                          ,height: height
+                          ,width: width});
    });
-   var Collider = F4(function (a,
-   b,
-   c,
-   d) {
-      return _U.insert("height",
-      c,
-      _U.insert("width",
-      b,
-      _U.insert("center",a,d)));
+   var collide = F2(function (collider1,
+   collider2) {
+      return function () {
+         var _v0 = {ctor: "_Tuple2"
+                   ,_0: collider1
+                   ,_1: collider2};
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            switch (_v0._0.ctor)
+              {case "AABBCollider":
+                 switch (_v0._1.ctor)
+                   {case "AABBCollider":
+                      return A2(aabbVSaabb,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "CircleCollider":
+                      return A2(aabbVScircle,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "EdgeCollider":
+                      return A2(aabbVSedge,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "PolygonCollider":
+                      return A2(aabbVSpolygon,
+                        _v0._0._0,
+                        _v0._1._0);}
+                   break;
+                 case "CircleCollider":
+                 switch (_v0._1.ctor)
+                   {case "AABBCollider":
+                      return A2(circleVSaabb,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "CircleCollider":
+                      return A2(circleVScircle,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "EdgeCollider":
+                      return A2(circleVSedge,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "PolygonCollider":
+                      return A2(circleVSpolygon,
+                        _v0._0._0,
+                        _v0._1._0);}
+                   break;
+                 case "EdgeCollider":
+                 switch (_v0._1.ctor)
+                   {case "AABBCollider":
+                      return A2(edgeVSaabb,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "CircleCollider":
+                      return A2(edgeVScircle,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "EdgeCollider":
+                      return A2(edgeVSedge,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "PolygonCollider":
+                      return A2(edgeVSpolygon,
+                        _v0._0._0,
+                        _v0._1._0);}
+                   break;
+                 case "PolygonCollider":
+                 switch (_v0._1.ctor)
+                   {case "AABBCollider":
+                      return A2(polygonVSaabb,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "CircleCollider":
+                      return A2(polygonVScircle,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "EdgeCollider":
+                      return A2(polygonVSedge,
+                        _v0._0._0,
+                        _v0._1._0);
+                      case "PolygonCollider":
+                      return A2(polygonVSpolygon,
+                        _v0._0._0,
+                        _v0._1._0);}
+                   break;}
+              break;}
+         return false;
+      }();
+   });
+   var drawCollider = F2(function (color,
+   collider) {
+      return function () {
+         switch (collider.ctor)
+         {case "AABBCollider":
+            return A2(Graphics.Collage.move,
+              {ctor: "_Tuple2"
+              ,_0: collider._0.center.x
+              ,_1: collider._0.center.y},
+              A2(Graphics.Collage.outlined,
+              Graphics.Collage.solid(color),
+              A2(Graphics.Collage.rect,
+              collider._0.width,
+              collider._0.height)));
+            case "CircleCollider":
+            return A2(Graphics.Collage.move,
+              {ctor: "_Tuple2"
+              ,_0: collider._0.center.x
+              ,_1: collider._0.center.y},
+              A2(Graphics.Collage.outlined,
+              Graphics.Collage.solid(color),
+              Graphics.Collage.circle(collider._0.radius)));
+            case "EdgeCollider":
+            return A2(Graphics.Collage.outlined,
+              Graphics.Collage.solid(color),
+              Graphics.Collage.path(_J.toList([{ctor: "_Tuple2"
+                                               ,_0: collider._0.vertex1.x
+                                               ,_1: collider._0.vertex1.x}
+                                              ,{ctor: "_Tuple2"
+                                               ,_0: collider._0.vertex2.x
+                                               ,_1: collider._0.vertex2.y}])));}
+         return A2(Graphics.Collage.filled,
+         color,
+         A2(Graphics.Collage.rect,
+         40,
+         40));
+      }();
+   });
+   var EdgeShape = F2(function (a,
+   b) {
+      return {_: {}
+             ,vertex1: a
+             ,vertex2: b};
+   });
+   var Centered = F2(function (a,
+   b) {
+      return _U.insert("center",
+      a,
+      b);
    });
    _elm.Physics.Collider.values = {_op: _op
-                                  ,collider: collider
+                                  ,aabbCollider: aabbCollider
+                                  ,circleCollider: circleCollider
+                                  ,edgeCollider: edgeCollider
+                                  ,polygonCollider: polygonCollider
+                                  ,aabbVSaabb: aabbVSaabb
+                                  ,aabbVScircle: aabbVScircle
+                                  ,aabbVSedge: aabbVSedge
+                                  ,aabbVSpolygon: aabbVSpolygon
+                                  ,circleVSaabb: circleVSaabb
+                                  ,circleVScircle: circleVScircle
+                                  ,circleVSedge: circleVSedge
+                                  ,circleVSpolygon: circleVSpolygon
+                                  ,edgeVSaabb: edgeVSaabb
+                                  ,edgeVScircle: edgeVScircle
+                                  ,edgeVSedge: edgeVSedge
+                                  ,edgeVSpolygon: edgeVSpolygon
+                                  ,polygonVSaabb: polygonVSaabb
+                                  ,polygonVScircle: polygonVScircle
+                                  ,polygonVSedge: polygonVSedge
+                                  ,polygonVSpolygon: polygonVSpolygon
                                   ,collide: collide
-                                  ,Collider: Collider};
+                                  ,drawCollider: drawCollider
+                                  ,AABBCollider: AABBCollider
+                                  ,CircleCollider: CircleCollider
+                                  ,EdgeCollider: EdgeCollider
+                                  ,PolygonCollider: PolygonCollider
+                                  ,Centered: Centered
+                                  ,EdgeShape: EdgeShape};
    return _elm.Physics.Collider.values;
 };

@@ -1,0 +1,66 @@
+Elm.Physics = Elm.Physics || {};
+Elm.Physics.Utilities = Elm.Physics.Utilities || {};
+Elm.Physics.Utilities.Basics = Elm.Physics.Utilities.Basics || {};
+Elm.Physics.Utilities.Basics.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Utilities = _elm.Physics.Utilities || {};
+   _elm.Physics.Utilities.Basics = _elm.Physics.Utilities.Basics || {};
+   if (_elm.Physics.Utilities.Basics.values)
+   return _elm.Physics.Utilities.Basics.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Utilities.Basics";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var swap2_3 = F4(function (f,
+   x,
+   y,
+   z) {
+      return A3(f,x,z,y);
+   });
+   var swap3_2 = swap2_3;
+   var swap1_3 = F4(function (f,
+   x,
+   y,
+   z) {
+      return A3(f,z,y,x);
+   });
+   var swap3_1 = swap1_3;
+   var toFront_3 = swap2_3(swap1_3);
+   var swap1_2 = Basics.flip;
+   var swap2_1 = swap1_2;
+   var toFront_2 = swap1_2;
+   var toBack_2 = swap1_2;
+   var toBack_3 = function ($) {
+      return swap1_2(swap2_3($));
+   };
+   _elm.Physics.Utilities.Basics.values = {_op: _op
+                                          ,swap1_2: swap1_2
+                                          ,swap1_3: swap1_3
+                                          ,swap2_1: swap2_1
+                                          ,swap2_3: swap2_3
+                                          ,swap3_1: swap3_1
+                                          ,swap3_2: swap3_2
+                                          ,toFront_2: toFront_2
+                                          ,toFront_3: toFront_3
+                                          ,toBack_2: toBack_2
+                                          ,toBack_3: toBack_3};
+   return _elm.Physics.Utilities.Basics.values;
+};

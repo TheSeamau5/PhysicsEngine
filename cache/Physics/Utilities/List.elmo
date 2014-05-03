@@ -1,0 +1,108 @@
+Elm.Physics = Elm.Physics || {};
+Elm.Physics.Utilities = Elm.Physics.Utilities || {};
+Elm.Physics.Utilities.List = Elm.Physics.Utilities.List || {};
+Elm.Physics.Utilities.List.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   _elm.Physics.Utilities = _elm.Physics.Utilities || {};
+   _elm.Physics.Utilities.List = _elm.Physics.Utilities.List || {};
+   if (_elm.Physics.Utilities.List.values)
+   return _elm.Physics.Utilities.List.values;
+   var _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _E = _N.Error.make(_elm),
+   _J = _N.JavaScript.make(_elm),
+   $moduleName = "Physics.Utilities.List";
+   var Basics = Elm.Basics.make(_elm);
+   var Color = Elm.Color.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
+   var Graphics = Graphics || {};
+   Graphics.Element = Elm.Graphics.Element.make(_elm);
+   var List = Elm.List.make(_elm);
+   var Maybe = Elm.Maybe.make(_elm);
+   var Native = Native || {};
+   Native.Ports = Elm.Native.Ports.make(_elm);
+   var Physics = Physics || {};
+   Physics.Utilities = Physics.Utilities || {};
+   Physics.Utilities.Basics = Elm.Physics.Utilities.Basics.make(_elm);
+   var Signal = Elm.Signal.make(_elm);
+   var String = Elm.String.make(_elm);
+   var Text = Elm.Text.make(_elm);
+   var Time = Elm.Time.make(_elm);
+   var _op = {};
+   var removeNth = F2(function (n,
+   list) {
+      return _L.append(A2(List.take,
+      n - 1,
+      list),
+      A2(List.drop,n,list));
+   });
+   var takeNth = function (n) {
+      return function ($) {
+         return List.last(List.take(n)($));
+      };
+   };
+   var applyNth = F3(function (n,
+   f,
+   list) {
+      return A2(List.map,
+      function ($) {
+         return f(takeNth(n)($));
+      }(list),
+      A2(removeNth,n,list));
+   });
+   var applyAll = F2(function (f,
+   list) {
+      return A2(List.map,
+      A3(Physics.Utilities.Basics.toFront_3,
+      applyNth,
+      f,
+      list),
+      _L.range(1,List.length(list)));
+   });
+   var toList = A2(Basics.flip,
+   F2(function (x,y) {
+      return {ctor: "::"
+             ,_0: x
+             ,_1: y};
+   }),
+   _J.toList([]));
+   _op["!!!"] = F2(function (list,
+   n) {
+      return function ($) {
+         return List.head(List.drop(n)($));
+      }(list);
+   });
+   _op["!!"] = F2(function (list,
+   n) {
+      return _U.cmp(n,
+      0) < 1 ? Maybe.Nothing : function () {
+         var _v0 = {ctor: "_Tuple2"
+                   ,_0: list
+                   ,_1: n};
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            switch (_v0._0.ctor)
+              {case "::": switch (_v0._1)
+                   {case 1:
+                      return Maybe.Just(_v0._0._0);}
+                   return A2(_op["!!"],
+                   _v0._0._1,
+                   _v0._1 - 1);
+                 case "[]":
+                 return Maybe.Nothing;}
+              break;}
+         _E.Case($moduleName,
+         "between lines 12 and 15");
+      }();
+   });
+   _elm.Physics.Utilities.List.values = {_op: _op
+                                        ,toList: toList
+                                        ,takeNth: takeNth
+                                        ,removeNth: removeNth
+                                        ,applyNth: applyNth
+                                        ,applyAll: applyAll};
+   return _elm.Physics.Utilities.List.values;
+};

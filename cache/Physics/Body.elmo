@@ -80,28 +80,34 @@ Elm.Physics.Body.make = function (_elm) {
    });
    var Dynamic = {ctor: "Dynamic"};
    var dynamicBody = body(Dynamic);
-   var applyForce = F2(function (force,
+   var applyForce = F3(function (timestep,
+   force,
    body) {
       return _U.eq(body.bodyType,
       Dynamic) ? _U.replace([["velocity"
                              ,A2(Physics.Math.Point._op["<+>"],
                              A2(Physics.Math.Point.scaleBy,
-                             1 / body.mass,
+                             timestep / body.mass,
                              force),
                              body.velocity)]],
       body) : body;
    });
-   var updateBody = function (body) {
+   var updateBody = F2(function (timestep,
+   body) {
       return _U.eq(body.bodyType,
       Dynamic) ? _U.replace([["position"
                              ,A2(Physics.Math.Point._op["<+>"],
-                             body.velocity,
+                             A2(Physics.Math.Point.scaleBy,
+                             timestep,
+                             body.velocity),
                              body.position)]],
       body) : body;
-   };
-   var applyForceNow = F2(function (force,
+   });
+   var applyForceNow = F3(function (timestep,
+   force,
    body) {
-      return updateBody(A2(applyForce,
+      return updateBody(timestep)(A3(applyForce,
+      timestep,
       force,
       body));
    });

@@ -1,111 +1,5 @@
 <!DOCTYPE HTML>
-<html><head><meta charset="UTF-8"><title>main</title><script type="text/javascript" src="elm-runtime.js"></script><script type="text/javascript">Elm.Main = Elm.Main || {};
-Elm.Main.make = function (_elm) {
-   "use strict";
-   _elm.Main = _elm.Main || {};
-   if (_elm.Main.values)
-   return _elm.Main.values;
-   var _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _E = _N.Error.make(_elm),
-   _J = _N.JavaScript.make(_elm),
-   $moduleName = "Main";
-   var Basics = Elm.Basics.make(_elm);
-   var Color = Elm.Color.make(_elm);
-   var Graphics = Graphics || {};
-   Graphics.Collage = Elm.Graphics.Collage.make(_elm);
-   var Graphics = Graphics || {};
-   Graphics.Element = Elm.Graphics.Element.make(_elm);
-   var Keyboard = Elm.Keyboard.make(_elm);
-   var List = Elm.List.make(_elm);
-   var Maybe = Elm.Maybe.make(_elm);
-   var Native = Native || {};
-   Native.Ports = Elm.Native.Ports.make(_elm);
-   var Physics = Physics || {};
-   Physics.Body = Elm.Physics.Body.make(_elm);
-   var Physics = Physics || {};
-   Physics.Collider = Elm.Physics.Collider.make(_elm);
-   var Physics = Physics || {};
-   Physics.Math = Physics.Math || {};
-   Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
-   var Physics = Physics || {};
-   Physics.Physic = Elm.Physics.Physic.make(_elm);
-   var Signal = Elm.Signal.make(_elm);
-   var String = Elm.String.make(_elm);
-   var Text = Elm.Text.make(_elm);
-   var Time = Elm.Time.make(_elm);
-   var _op = {};
-   var getInput = function (hero) {
-      return function () {
-         switch (hero.ctor)
-         {case "CircleCollider":
-            return A3(Signal.lift2,
-              Physics.Collider.circleCollider,
-              A3(Signal.foldp,
-              F2(function (x,y) {
-                 return A2(Physics.Math.Point._op["<+>"],
-                 x,
-                 y);
-              }),
-              hero._0.center,
-              A2(Signal.lift,
-              Physics.Math.Point.scaleBy(10),
-              A2(Signal.lift,
-              Physics.Math.Point.toFloatPoint,
-              Keyboard.arrows))),
-              Signal.constant(hero._0.radius));}
-         return Signal.constant(hero);
-      }();
-   };
-   var render = F2(function (collider1,
-   collider2) {
-      return function () {
-         var colliderColor = function () {
-            var _v2 = A2(Physics.Collider.collide,
-            collider1,
-            collider2);
-            switch (_v2)
-            {case false: return Color.green;
-               case true: return Color.red;}
-            _E.Case($moduleName,
-            "between lines 14 and 17");
-         }();
-         return A3(Graphics.Collage.collage,
-         400,
-         400,
-         _J.toList([A2(Physics.Collider.drawCollider,
-                   colliderColor,
-                   collider1)
-                   ,A2(Physics.Collider.drawCollider,
-                   colliderColor,
-                   collider2)]));
-      }();
-   });
-   var update = F2(function (hero,
-   test) {
-      return A2(Signal.lift2,
-      render,
-      Signal.constant(test))(getInput(hero));
-   });
-   var bar = A2(Physics.Collider.circleCollider,
-   A2(Physics.Math.Point.point,
-   -50,
-   0),
-   50);
-   var foo = A2(Physics.Collider.circleCollider,
-   Physics.Math.Point.origin,
-   50);
-   var main = A2(update,foo,bar);
-   _elm.Main.values = {_op: _op
-                      ,foo: foo
-                      ,bar: bar
-                      ,render: render
-                      ,getInput: getInput
-                      ,update: update
-                      ,main: main};
-   return _elm.Main.values;
-};Elm.Physics = Elm.Physics || {};
+<html><head><meta charset="UTF-8"><title>Physic</title><script type="text/javascript" src="elm-runtime.js"></script><script type="text/javascript">Elm.Physics = Elm.Physics || {};
 Elm.Physics.Physic = Elm.Physics.Physic || {};
 Elm.Physics.Physic.make = function (_elm) {
    "use strict";
@@ -147,12 +41,14 @@ Elm.Physics.Physic.make = function (_elm) {
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
+   var main = Text.asText("Hello");
    var Physic = F2(function (a,b) {
       return {_: {}
              ,body: b
              ,collider: a};
    });
    _elm.Physics.Physic.values = {_op: _op
+                                ,main: main
                                 ,Physic: Physic};
    return _elm.Physics.Physic.values;
 };Elm.Physics = Elm.Physics || {};
@@ -375,7 +271,7 @@ Elm.Physics.Collider.make = function (_elm) {
       return _U.cmp(circle1.radius + circle2.radius,
       A2(Physics.Math.Point.distance,
       circle1.center,
-      circle2.center)) > 0;
+      circle2.center)) < 0;
    });
    var aabbVSpolygon = F2(function (aabb,
    polygon) {
@@ -737,7 +633,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
    });
    _op["</>"] = F2(function (p,q) {
       return _U.replace([["x"
-                         ,p.x / q.x]
+                         ,p.x / q.y]
                         ,["y",p.y / q.y]],
       q);
    });
@@ -747,7 +643,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
    });
    _op["<*>"] = F2(function (p,q) {
       return _U.replace([["x"
-                         ,p.x * q.x]
+                         ,p.x * q.y]
                         ,["y",p.y * q.y]],
       q);
    });
@@ -757,7 +653,7 @@ Elm.Physics.Math.Point.make = function (_elm) {
    });
    _op["<->"] = F2(function (p,q) {
       return _U.replace([["x"
-                         ,p.x - q.x]
+                         ,p.x - q.y]
                         ,["y",p.y - q.y]],
       q);
    });
@@ -1002,4 +898,4 @@ Elm.Physics.Utilities.Basics.make = function (_elm) {
                                           ,toBack_2: toBack_2
                                           ,toBack_3: toBack_3};
    return _elm.Physics.Utilities.Basics.values;
-};</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Main)</script><noscript></noscript></body></html>
+};</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Physics.Physic)</script><noscript></noscript></body></html>

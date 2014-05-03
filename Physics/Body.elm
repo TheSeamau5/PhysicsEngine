@@ -105,8 +105,8 @@ moonGravity     = gravity 1.62
 
 {-  Function to apply a force to a body.
     Note : This function only updates the velocity, not the position -}
-applyForce  : Point a -> Body b c -> Float -> Body b c 
-applyForce force body timestep = 
+applyForce  : Float -> Point a -> Body b c -> Body b c 
+applyForce timestep force body = 
   if  | (body.bodyType == Dynamic) -> 
             { body | velocity <- ( scaleBy ( timestep / body.mass ) force ) <+> body.velocity }
       | otherwise -> body
@@ -116,8 +116,8 @@ applyForce force body timestep =
     Note : This function must be called in order for a body to move
     The applyForce function does not change a body's position)
     Only the updateBody function does -}
-updateBody : Body a b -> Float -> Body a b 
-updateBody body timestep =
+updateBody : Float -> Body a b -> Body a b 
+updateBody timestep body  =
   if  | (body.bodyType == Dynamic) -> 
             { body | position <- (scaleBy timestep body.velocity) <+> body.position }
       | otherwise -> body 
@@ -125,5 +125,5 @@ updateBody body timestep =
 {-  Quick and easy Function to apply a force and update the body.
     This Function applies the force to the body and affects
     the position of the body.-}
-applyForceNow : Point a -> Body b c -> Float -> Body b c 
-applyForceNow force body timestep = applyForce force body timestep |> updateBody timestep
+applyForceNow : Float -> Point a -> Body b c -> Body b c 
+applyForceNow timestep force body = applyForce timestep force body  |> updateBody timestep

@@ -18,7 +18,7 @@ list !! n =
 -- nth element in list
 infixl 9 !!!
 (!!!) : [a] -> Int ->  a
-list !!! n = head . drop n
+list !!! n = (head . drop n) list
 
 -- Turns an object into a list with one element
 toList : a -> [a]

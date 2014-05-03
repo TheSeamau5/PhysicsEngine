@@ -28,190 +28,80 @@ Elm.Main.make = function (_elm) {
    var Physics = Physics || {};
    Physics.Math = Physics.Math || {};
    Physics.Math.Point = Elm.Physics.Math.Point.make(_elm);
+   var Physics = Physics || {};
+   Physics.Physic = Elm.Physics.Physic.make(_elm);
    var Signal = Elm.Signal.make(_elm);
    var String = Elm.String.make(_elm);
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
-   var getInput = A3(Signal.foldp,
-   F2(function (x,y) {
-      return A2(Physics.Math.Point._op["<+>"],
-      x,
-      y);
-   }),
-   Physics.Math.Point.origin,
-   A2(Signal.lift,
-   Physics.Math.Point.toFloatPoint,
-   Keyboard.arrows));
-   var updateObject = F2(function (obj,
-   p) {
-      return _U.replace([["collider"
-                         ,A3(Physics.Collider.collider,
-                         obj.body.position,
-                         obj.collider.width,
-                         obj.collider.height)]
-                        ,["body"
-                         ,A2(Physics.Body.applyForceNow,
-                         p,
-                         obj.body)]],
-      obj);
-   });
-   var drawGameObject = function (gameObject) {
-      return A2(Graphics.Collage.move,
-      {ctor: "_Tuple2"
-      ,_0: gameObject.collider.center.x
-      ,_1: gameObject.collider.center.y},
-      A2(Graphics.Collage.filled,
-      gameObject.color,
-      A2(Graphics.Collage.rect,
-      gameObject.collider.width,
-      gameObject.collider.height)));
+   var getInput = function (hero) {
+      return function () {
+         switch (hero.ctor)
+         {case "CircleCollider":
+            return A3(Signal.lift2,
+              Physics.Collider.circleCollider,
+              A3(Signal.foldp,
+              F2(function (x,y) {
+                 return A2(Physics.Math.Point._op["<+>"],
+                 x,
+                 y);
+              }),
+              hero._0.center,
+              A2(Signal.lift,
+              Physics.Math.Point.scaleBy(10),
+              A2(Signal.lift,
+              Physics.Math.Point.toFloatPoint,
+              Keyboard.arrows))),
+              Signal.constant(hero._0.radius));}
+         return Signal.constant(hero);
+      }();
    };
-   var drawScene = F2(function (width,
-   height) {
-      return function ($) {
-         return A2(Graphics.Collage.collage,
-         width,
-         height)(List.map(drawGameObject)($));
-      };
+   var render = F2(function (collider1,
+   collider2) {
+      return function () {
+         var colliderColor = function () {
+            var _v2 = A2(Physics.Collider.collide,
+            collider1,
+            collider2);
+            switch (_v2)
+            {case false: return Color.green;
+               case true: return Color.red;}
+            _E.Case($moduleName,
+            "between lines 14 and 17");
+         }();
+         return A3(Graphics.Collage.collage,
+         400,
+         400,
+         _J.toList([A2(Physics.Collider.drawCollider,
+                   colliderColor,
+                   collider1)
+                   ,A2(Physics.Collider.drawCollider,
+                   colliderColor,
+                   collider2)]));
+      }();
    });
-   var render = Signal.lift(A2(drawScene,
-   400,
-   400));
-   var gameObject = F3(function (collider,
-   body,
-   color) {
-      return {_: {}
-             ,body: body
-             ,collider: collider
-             ,color: color};
+   var update = F2(function (hero,
+   test) {
+      return A2(Signal.lift2,
+      render,
+      Signal.constant(test))(getInput(hero));
    });
-   var squareObject = F4(function (color,
-   mass,
-   center,
-   size) {
-      return A3(gameObject,
-      A3(Physics.Collider.collider,
-      center,
-      size,
-      size),
-      A3(Physics.Body.dynamicBody,
-      mass,
-      center,
-      Physics.Math.Point.origin),
-      color);
-   });
-   var hero = A4(squareObject,
-   Color.blue,
-   50,
+   var bar = A2(Physics.Collider.circleCollider,
    A2(Physics.Math.Point.point,
-   50,
-   50),
+   -50,
+   0),
    50);
-   var GameObject = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,body: b
-             ,collider: a
-             ,color: c};
-   });
-   var removeNth = F2(function (n,
-   list) {
-      return _L.append(A2(List.take,
-      n - 1,
-      list),
-      A2(List.drop,n,list));
-   });
-   var takeNth = function (n) {
-      return function ($) {
-         return List.last(List.take(n)($));
-      };
-   };
-   var applyNth = F3(function (n,
-   f,
-   list) {
-      return A2(List.map,
-      function ($) {
-         return f(takeNth(n)($));
-      }(list),
-      A2(removeNth,n,list));
-   });
-   var toList = A2(Basics.flip,
-   F2(function (x,y) {
-      return {ctor: "::"
-             ,_0: x
-             ,_1: y};
-   }),
-   _J.toList([]));
-   var updatePhysics = F2(function (obj,
-   p) {
-      return A2(Signal.lift,
-      toList,
-      A3(Signal.foldp,
-      Basics.flip(updateObject),
-      obj,
-      p));
-   });
-   var update = function (obj) {
-      return render(updatePhysics(obj)(getInput));
-   };
-   var main = update(hero);
-   var swap2_3 = F4(function (f,
-   x,
-   y,
-   z) {
-      return A3(f,x,z,y);
-   });
-   var swap3_2 = swap2_3;
-   var swap1_3 = F4(function (f,
-   x,
-   y,
-   z) {
-      return A3(f,z,y,x);
-   });
-   var swap3_1 = swap1_3;
-   var toFront_3 = swap2_3(swap1_3);
-   var applyAll = F2(function (f,
-   list) {
-      return A2(List.map,
-      A3(toFront_3,applyNth,f,list),
-      _L.range(1,List.length(list)));
-   });
-   var swap1_2 = Basics.flip;
-   var swap2_1 = swap1_2;
-   var toFront_2 = swap1_2;
-   var toBack_2 = swap1_2;
-   var toBack_3 = function ($) {
-      return swap1_2(swap2_3($));
-   };
+   var foo = A2(Physics.Collider.circleCollider,
+   Physics.Math.Point.origin,
+   50);
+   var main = A2(update,foo,bar);
    _elm.Main.values = {_op: _op
-                      ,swap1_2: swap1_2
-                      ,swap1_3: swap1_3
-                      ,swap2_1: swap2_1
-                      ,swap2_3: swap2_3
-                      ,swap3_1: swap3_1
-                      ,swap3_2: swap3_2
-                      ,toFront_2: toFront_2
-                      ,toFront_3: toFront_3
-                      ,toBack_2: toBack_2
-                      ,toBack_3: toBack_3
-                      ,toList: toList
-                      ,takeNth: takeNth
-                      ,removeNth: removeNth
-                      ,applyNth: applyNth
-                      ,applyAll: applyAll
-                      ,gameObject: gameObject
-                      ,squareObject: squareObject
-                      ,drawGameObject: drawGameObject
-                      ,drawScene: drawScene
-                      ,hero: hero
+                      ,foo: foo
+                      ,bar: bar
                       ,render: render
-                      ,updateObject: updateObject
-                      ,updatePhysics: updatePhysics
                       ,getInput: getInput
                       ,update: update
-                      ,main: main
-                      ,GameObject: GameObject};
+                      ,main: main};
    return _elm.Main.values;
 };
